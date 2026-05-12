@@ -53,6 +53,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class CommandExecutorTask implements Runnable {
     
+    private static final int QUERY_ROW_LIMIT = 1000;
+    
     private final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine;
     
     private final ConnectionSession connectionSession;
@@ -111,7 +113,8 @@ public final class CommandExecutorTask implements Runnable {
             }
             responsePackets.forEach(context::write);
             if (commandExecutor instanceof QueryCommandExecutor) {
-                commandExecuteEngine.writeQueryData(context, connectionSession.getDatabaseConnectionManager(), (QueryCommandExecutor) commandExecutor, responsePackets.size());
+                commandExecuteEngine.writeQueryData(context, connectionSession.getDatabaseConnectionManager(),
+                        new RowLimitedQueryCommandExecutor((QueryCommandExecutor) commandExecutor, QUERY_ROW_LIMIT), responsePackets.size());
             }
             return true;
         } catch (final SQLException | ShardingSphereSQLException | SQLDialectException ex) {

@@ -47,6 +47,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 
 import java.nio.charset.StandardCharsets;
@@ -54,7 +55,9 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -135,7 +138,10 @@ class CommandExecutorTaskTest {
         when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
         new CommandExecutorTask(engine, connectionSession, handlerContext, message).run();
         verify(handlerContext).flush();
-        verify(engine.getCommandExecuteEngine()).writeQueryData(handlerContext, databaseConnectionManager, queryCommandExecutor, 1);
+        ArgumentCaptor<QueryCommandExecutor> queryCommandExecutorCaptor = ArgumentCaptor.forClass(QueryCommandExecutor.class);
+        verify(engine.getCommandExecuteEngine()).writeQueryData(eq(handlerContext), eq(databaseConnectionManager), queryCommandExecutorCaptor.capture(), eq(1));
+        Object actualQueryCommandExecutor = queryCommandExecutorCaptor.getValue();
+        assertTrue(actualQueryCommandExecutor instanceof RowLimitedQueryCommandExecutor);
         verify(queryCommandExecutor).close();
         verify(databaseConnectionManager).closeExecutionResources();
     }
