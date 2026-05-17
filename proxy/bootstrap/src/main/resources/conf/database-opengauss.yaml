@@ -1,0 +1,12 @@
+databaseName: sharding_db
+
+dataSources:
+  ds_0:
+    url: jdbc:opengauss://127.0.0.1:25432/postgres
+    username: gaussdb
+    password: OpenGauss@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 5
+    minPoolSize: 1

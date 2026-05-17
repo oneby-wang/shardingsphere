@@ -1,0 +1,12 @@
+databaseName: pg_db
+
+dataSources:
+  ds_pg:
+    url: jdbc:postgresql://127.0.0.1:5432/postgres
+    username: onebywang
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 5
+    minPoolSize: 1
